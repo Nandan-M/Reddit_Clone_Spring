@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import dto.RegisterRequest;
 import lombok.AllArgsConstructor;
+import model.NotificationEmail;
 import model.User;
 import repository.UserRepository;
 
@@ -27,6 +28,7 @@ public class AuthService {
 	private final UserRepository userRepository;
 	
 	private final VerificationTokenRepository verificationTokenRepository;
+	private final MailService mailService;
 	
 	@Transactional
 	public void signup(RegisterRequest registerRequest) {
@@ -39,6 +41,7 @@ public class AuthService {
 		userRepository.save(user);
 		
 		String token = generateVerificationToken(user);
+		mailService.sendMail(new NotificationEmail("Activate the email" , user.getEmail(), "Please activate your account using the below link" +"http://localhost:8080/api/auth/accountVerification"+ token));
 	}
 	
 	public String generateVerificationToken(User user) {
